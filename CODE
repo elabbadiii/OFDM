@@ -1,0 +1,30 @@
+clear all;
+close all;
+
+B = 2e6;
+N = 256;
+nbPilots = 26;
+nbZeros = N/8;
+delayMax = 1e-6;
+Ts = N/B;
+nUtile = N - ( nbZeros + nbPilots );
+nCycle = delayMax * N / Ts;
+nTotal = N + nCycle;
+
+W = ( nUtile + nbPilots ) / nTotal^2;
+
+SNR=-5:5:20;
+Mv=[2 4];
+for j=1:length(Mv)
+    M=Mv(j)
+    debit = M*nUtile/Ts;
+    TEBPSK=zeros(1,length(SNR));
+    for i=1:length(SNR)
+        SNR_=SNR(i)
+        sim('CODE');
+        TEBPSK(i)=berPSK(1);
+    end
+    TEBPSK
+   figure(1); semilogy(SNR,TEBPSK,'-*');hold on;
+end
+figure(1);legend('QPSK','16-PSK');grid on; xlabel('SNR(dB)'); ylabel('TEB');title('Variation du TEB e fonction du bruit du canal');
